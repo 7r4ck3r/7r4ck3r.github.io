@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>IC GitHub Project Tracker</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">GitHub information retrieval</p>
+        <h1>IC 开源项目检索</h1>
+      </div>
+      <div class="header-actions">
+        <button class="icon-button" id="refreshButton" type="button" title="重新检索" aria-label="重新检索">
+          <span aria-hidden="true">↻</span>
+        </button>
+        <button class="icon-button" id="trafficButton" type="button" title="流量统计" aria-label="流量统计">
+          <span aria-hidden="true">▦</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="control-panel" aria-label="检索条件">
+        <form id="searchForm" class="search-form">
+          <label class="field">
+            <span>关键词</span>
+            <input
+              id="keywordInput"
+              name="keyword"
+              type="search"
+              autocomplete="off"
+              placeholder="例如 ADC, RISC-V, OpenLane, Verilog"
+            />
+          </label>
+
+          <div class="field">
+            <span>检索方向</span>
+            <div class="topic-grid" id="topicGrid"></div>
+          </div>
+
+          <div class="two-col">
+            <label class="field">
+              <span>语言</span>
+              <select id="languageSelect" name="language">
+                <option value="">不限</option>
+                <option>Verilog</option>
+                <option>SystemVerilog</option>
+                <option>VHDL</option>
+                <option>Python</option>
+                <option>C++</option>
+                <option>C</option>
+                <option>Tcl</option>
+                <option>Jupyter Notebook</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>排序</span>
+              <select id="sortSelect" name="sort">
+                <option value="stars-desc">Stars ↓</option>
+                <option value="updated-desc">更新 ↓</option>
+                <option value="forks-desc">Forks ↓</option>
+                <option value="score-desc">相关度 ↓</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="two-col">
+            <label class="field">
+              <span>最低 Stars</span>
+              <input id="minStarsInput" name="minStars" type="number" min="0" step="10" value="10" />
+            </label>
+
+            <label class="field">
+              <span>更新时间</span>
+              <select id="updatedSelect" name="updated">
+                <option value="">不限</option>
+                <option value="30">30 天内</option>
+                <option value="180">半年内</option>
+                <option value="365">一年内</option>
+                <option value="1095">三年内</option>
+              </select>
+            </label>
+          </div>
+
+          <label class="toggle-line">
+            <input id="excludeArchivedInput" type="checkbox" checked />
+            <span>排除 archived 仓库</span>
+          </label>
+
+          <label class="field token-field">
+            <span>GitHub Token</span>
+            <input id="tokenInput" type="password" autocomplete="off" placeholder="可选，仅保存在当前标签页" />
+          </label>
+
+          <button class="primary-button" type="submit">检索 GitHub</button>
+        </form>
+
+        <section class="saved-panel" aria-label="关注清单">
+          <div class="panel-heading">
+            <h2>关注清单</h2>
+            <button class="text-button" id="exportButton" type="button">导出 CSV</button>
+          </div>
+          <div class="saved-list" id="savedList"></div>
+        </section>
+      </aside>
+
+      <section class="results-panel" aria-live="polite">
+        <div class="results-toolbar">
+          <div>
+            <p class="status-line" id="statusLine">准备检索 GitHub 项目</p>
+            <p class="query-line" id="queryLine"></p>
+          </div>
+          <a class="github-link" id="githubSearchLink" href="https://github.com/search?type=repositories" target="_blank" rel="noreferrer">
+            GitHub 搜索页
+          </a>
+        </div>
+
+        <div class="metrics-row" id="metricsRow">
+          <div class="metric">
+            <span>结果</span>
+            <strong id="resultCount">0</strong>
+          </div>
+          <div class="metric">
+            <span>最高 Stars</span>
+            <strong id="topStars">0</strong>
+          </div>
+          <div class="metric">
+            <span>活跃仓库</span>
+            <strong id="activeCount">0</strong>
+          </div>
+          <div class="metric">
+            <span>API 剩余</span>
+            <strong id="rateLimit">--</strong>
+          </div>
+        </div>
+
+        <div class="results-grid" id="resultsGrid"></div>
+      </section>
+    </main>
+
+    <dialog class="traffic-dialog" id="trafficDialog">
+      <div class="dialog-heading">
+        <h2>请求统计</h2>
+        <button class="icon-button" id="closeTrafficButton" type="button" aria-label="关闭">×</button>
+      </div>
+      <div class="metrics-row">
+        <div class="metric">
+          <span>本次请求</span>
+          <strong id="sessionRequests">0</strong>
+        </div>
+        <div class="metric">
+          <span>累计请求</span>
+          <strong id="totalRequests">0</strong>
+        </div>
+        <div class="metric">
+          <span>最近查询</span>
+          <strong id="lastQueryTime">--</strong>
+        </div>
+      </div>
+      <div class="history-list" id="historyList"></div>
+    </dialog>
+
+    <script src="app.js"></script>
+  </body>
+</html>
